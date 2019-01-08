@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using DiscordTutorialBot.Core;
+using DiscordTutorialBot.Core.UserAccounts;
 
 namespace DiscordTutorialBot.Modules
 {
@@ -43,6 +45,15 @@ namespace DiscordTutorialBot.Modules
         {
             var dmChannel = await Context.User.GetOrCreateDMChannelAsync();
             await dmChannel.SendMessageAsync("Sorry... you're on your own for now");
+        }
+
+        [Command("xp")]
+        public async Task MyXP()
+        {
+            UserAccount account = UserAccounts.GetAccount(Context.User);
+            await Context.Channel.SendMessageAsync($"You have {account.XP} XP.");
+            account.XP++;
+            UserAccounts.SaveAccounts();
         }
     }
 }
