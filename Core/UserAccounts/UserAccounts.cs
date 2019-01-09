@@ -29,10 +29,55 @@ namespace DiscordTutorialBot.Core.UserAccounts
 
         public static UserAccount GetAccount(SocketUser user)
         {
-            return GetOrCreateAccount(user.Id);
+            return GetOrCreateAccount(user.Id,user.Mention);
         }
 
-        private static UserAccount GetOrCreateAccount(ulong id)
+
+
+
+        public static List<UserAccount> GetAccountsWithProfile(string platform)
+        {
+            var result = from a in accounts
+                         where a.Profiles.ContainsKey(platform)
+                         select a;
+            return result.ToList<UserAccount>();
+
+        }
+        public static List<UserAccount> GetAccountsWithProfiles()
+        {
+            var result = from a in accounts
+                         where a.Profiles.Count > 0
+                         select a;
+            return result.ToList<UserAccount>();
+
+        }
+
+
+
+
+        public static List<UserAccount> GetAccountsWithClan(string platform)
+        {
+            var result = from a in accounts
+                         where a.Clans.ContainsKey(platform)
+                         select a;
+            return result.ToList<UserAccount>();
+
+        }
+        public static List<UserAccount> GetAccountsWithClans()
+        {
+            var result = from a in accounts
+                         where a.Clans.Count > 0
+                         select a;
+            return result.ToList<UserAccount>();
+
+        }
+
+
+
+
+
+
+        private static UserAccount GetOrCreateAccount(ulong id, string mention)
         {
             var result = from a in accounts
                          where a.Id == id
@@ -40,18 +85,19 @@ namespace DiscordTutorialBot.Core.UserAccounts
             UserAccount account = result.FirstOrDefault();
             if(account == null)
             {
-                account = CreateUserAccount(id);
+                account = CreateUserAccount(id,mention);
                 accounts.Add(account);
                 SaveAccounts();
             }
             return account;
         }
 
-        private static UserAccount CreateUserAccount(ulong id)
+        private static UserAccount CreateUserAccount(ulong id, string mention)
         {
             UserAccount newAccount = new UserAccount()
             {
-                Id = id
+                Id = id,
+                Mention = mention
             };
             return newAccount;
         }

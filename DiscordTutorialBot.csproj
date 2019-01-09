@@ -131,6 +131,9 @@
     <Compile Include="Core\UserAccounts\UserAccount.cs" />
     <Compile Include="Core\UserAccounts\UserAccounts.cs" />
     <Compile Include="Core\DataStorage.cs" />
+    <Compile Include="Modules\GameClans.cs" />
+    <Compile Include="Modules\GamerProfiles.cs" />
+    <Compile Include="Modules\Interactions.cs" />
     <Compile Include="Modules\Misc.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

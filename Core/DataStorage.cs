@@ -84,5 +84,13 @@ namespace DiscordTutorialBot.Core
             string json = File.ReadAllText(usersPath);
             return JsonConvert.DeserializeObject<List<UserAccount>>(json);
         }
+
+
+        // load gifs data
+        public static Dictionary<string,List<string>> LoadGifsData()
+        {
+            string json = File.ReadAllText("SystemLang/gifs.json");
+            return JsonConvert.DeserializeObject<Dictionary<string, List<string>>>(json);
+        }
     }
 }
