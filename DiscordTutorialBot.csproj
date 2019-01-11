@@ -128,6 +128,7 @@
   <ItemGroup>
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Core\GlobalUtils.cs" />
     <Compile Include="Core\UserAccounts\UserAccount.cs" />
     <Compile Include="Core\UserAccounts\UserAccounts.cs" />
     <Compile Include="Core\DataStorage.cs" />
@@ -135,6 +136,7 @@
     <Compile Include="Modules\GamerProfiles.cs" />
     <Compile Include="Modules\Interactions.cs" />
     <Compile Include="Modules\Misc.cs" />
+    <Compile Include="Modules\RoleManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utilities.cs" />

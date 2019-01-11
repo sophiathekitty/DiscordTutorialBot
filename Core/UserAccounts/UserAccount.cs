@@ -10,6 +10,11 @@ namespace DiscordTutorialBot.Core.UserAccounts
     {
         public ulong Id { get; set; }
         public string Mention;
+        public string they = "they";
+        public string them = "them";
+        public string their = "their";
+        public string theirs = "theirs";
+        public string themself = "themself";
         public Dictionary<string, string> Profiles = new Dictionary<string, string>();
         public Dictionary<string, string> Clans = new Dictionary<string, string>();
         public string ErrorMessage;

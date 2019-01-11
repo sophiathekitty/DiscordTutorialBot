@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
+using DiscordTutorialBot.Core;
 
 namespace DiscordTutorialBot
 {
@@ -23,6 +24,7 @@ namespace DiscordTutorialBot
             {
                 LogLevel = Discord.LogSeverity.Verbose
             });
+            GlobalUtils.client = client;
             client.Log += Log;
 
             await client.LoginAsync(Discord.TokenType.Bot, Config.bot.token);
@@ -30,6 +32,7 @@ namespace DiscordTutorialBot
 
             handler = new CommandHandler();
             await handler.InitializeAsync(client);
+
             await Task.Delay(-1);
         }
 

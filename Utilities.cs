@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.IO;
+using Discord.Rest;
+using System.Timers;
 
 namespace DiscordTutorialBot
 {

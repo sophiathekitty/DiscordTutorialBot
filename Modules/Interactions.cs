@@ -39,8 +39,9 @@ namespace DiscordTutorialBot.Modules
             }
             else
             {
-                embed.WithDescription($"{Context.User.Mention} {action} themself");
-                embed.WithImageUrl(GetRandomGifURL(key+"_alone"));
+                UserAccount account = UserAccounts.GetAccount(Context.User);
+                embed.WithDescription($"{Context.User.Mention} {action} {account.themself}");
+                embed.WithImageUrl(GetRandomGifURL(key+""));
             }
 
             embed.WithColor(new Color(0, 100, 255));
@@ -78,7 +79,7 @@ namespace DiscordTutorialBot.Modules
         [Alias("dances")]
         public async Task Dance([Remainder]string arg = "")
         {
-            await Context.Channel.SendMessageAsync("", false, SendGifAction("dance", "dances"));
+            await Context.Channel.SendMessageAsync("", false, SendGifAction("dance", "dances with"));
         }
 
         [Command("cry")]
