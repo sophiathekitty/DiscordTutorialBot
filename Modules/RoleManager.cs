@@ -148,6 +148,31 @@ namespace DiscordTutorialBot.Modules
                 UpdateOrAddRoleMessage();
             }
         }
+        [Command("removeRole")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task RemoveRole([Remainder]string arg = "")
+        {
+            var result = from a in Context.Guild.Roles
+                         where a.Name == arg
+                         select a;
+            SocketRole role = result.FirstOrDefault();
+            if (role == null)
+                await Context.Channel.SendMessageAsync($"Couldn't find `{arg}` in Guild.Roles");
+            else
+            {
+                if (roles.Contains(role.Name))
+                {
+                    roles.Remove(role.Name);
+                    await Context.Channel.SendMessageAsync($"`{role.Name}` removed");
+                }
+                else
+                {
+                    await Context.Channel.SendMessageAsync($"`{role.Name}` not in managed roles list");
+                }
+                UpdateOrAddRoleMessage();
+            }
+        }
+
         private async void UpdateOrAddRoleMessage()
         {
             if (roleChannel == null) return;
@@ -167,7 +192,9 @@ namespace DiscordTutorialBot.Modules
             }
 
             embed.WithDescription(roles_txt);
-            if(roleMessageId == 0)
+            embed.WithColor(GlobalUtils.color);
+
+            if (roleMessageId == 0)
             {
                 RestUserMessage msg = await chan.SendMessageAsync("", false, embed.Build());
                 roleMessageId = msg.Id;
@@ -175,9 +202,8 @@ namespace DiscordTutorialBot.Modules
             }
             else
             {
-                RestUserMessage msg = await chan.GetMessageAsync(roleMessageId) as RestUserMessage;
 
-                if(msg == null)
+                if (!(await chan.GetMessageAsync(roleMessageId) is RestUserMessage msg))
                 {
                     RestUserMessage msg2 = await chan.SendMessageAsync("", false, embed.Build());
                     roleMessageId = msg2.Id;
@@ -189,6 +215,7 @@ namespace DiscordTutorialBot.Modules
                     {
                         x.Embed = embed.Build();
                     });
+                    await msg.RemoveAllReactionsAsync();
                     await msg.AddReactionsAsync(emotes.ToArray());
                 }
             }

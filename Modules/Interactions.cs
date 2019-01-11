@@ -44,7 +44,7 @@ namespace DiscordTutorialBot.Modules
                 embed.WithImageUrl(GetRandomGifURL(key+""));
             }
 
-            embed.WithColor(new Color(0, 100, 255));
+            embed.WithColor(GlobalUtils.color);
             return embed.Build();
         }
 
