@@ -15,14 +15,17 @@ namespace DiscordTutorialBot.Modules
     public class RoleManager : ModuleBase<SocketCommandContext>
     {
 
-        private static SocketGuildChannel roleChannel;
+        public static SocketGuildChannel roleChannel;
         private static ulong roleMessageId;
         private static List<string> roles = new List<string>();
 
         private static string[] menu_emoji = { "\u0031\u20E3", "\u0032\u20E3", "\u0033\u20E3", "\u0034\u20E3", "\u0035\u20E3", "\u0036\u20E3", "\u0037\u20E3", "\u0038\u20E3", "\u0039\u20E3" };
 
+        private static bool ready = false;
+
         public RoleManager()
         {
+            if (ready) return;
             Console.WriteLine("Role Manager Started");
             if (GlobalUtils.client == null)
                 Console.WriteLine("Client not set yet! D:");
@@ -31,6 +34,7 @@ namespace DiscordTutorialBot.Modules
                 GlobalUtils.client.ReactionAdded += OnReactionAdded;
                 GlobalUtils.client.ReactionRemoved += OnReactionRemoved;
                 GlobalUtils.client.Ready += OnReady;
+                ready = true;
             }
         }
 
@@ -121,7 +125,10 @@ namespace DiscordTutorialBot.Modules
         {
             
             roleChannel = Context.Message.MentionedChannels.FirstOrDefault();
-            await Context.Channel.SendMessageAsync($"Role Channel set to `{roleChannel.Name}`");
+            if(roleChannel != null)
+                await Context.Channel.SendMessageAsync($"Role Channel set to `{roleChannel.Name}`");
+            else
+                await Context.Channel.SendMessageAsync($"Channel `{arg}` not found");
             Save();
         }
 
@@ -180,7 +187,7 @@ namespace DiscordTutorialBot.Modules
 
             ISocketMessageChannel chan = roleChannel as ISocketMessageChannel;
             EmbedBuilder embed = new EmbedBuilder();
-            embed.WithTitle("Self Serve Roles");
+            embed.WithTitle("General Roles");
 
             string roles_txt = "";
             List<IEmote> emotes = new List<IEmote>();

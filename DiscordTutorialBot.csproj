@@ -134,6 +134,7 @@
     <Compile Include="Core\DataStorage.cs" />
     <Compile Include="Modules\GameClans.cs" />
     <Compile Include="Modules\GamerProfiles.cs" />
+    <Compile Include="Modules\GamesManager.cs" />
     <Compile Include="Modules\Interactions.cs" />
     <Compile Include="Modules\Misc.cs" />
     <Compile Include="Modules\RoleManager.cs" />
