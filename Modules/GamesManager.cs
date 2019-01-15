@@ -87,25 +87,29 @@ namespace DiscordTutorialBot.Modules
         private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
             // remove vote
-            if (pendingGames.ContainsKey(reaction.MessageId))
+            if (pendingGames.ContainsKey(reaction.MessageId) && reaction.Emote.Name == "\u2705")
             {
                 pendingGames[reaction.MessageId].votes--;
             }
             else if (reaction.MessageId == roleMessageId)
             {
                 // they reacted to the correct role message
-                SocketGuild guild = GlobalUtils.client.Guilds.FirstOrDefault();
+                IGuildChannel guildChannel = channel as IGuildChannel;
+                SocketGuild guild = guildChannel.Guild as SocketGuild; //GlobalUtils.client.Guilds.FirstOrDefault();
                 SocketUser user = GlobalUtils.client.GetUser(reaction.UserId);
                 SocketGuildUser guser = guild.GetUser(user.Id);
+                Console.WriteLine("Remove Game Role: "+guser.Nickname);
                 for (int i = 0; i < games.Count && i < 9; i++)
                 {
                     if (GlobalUtils.menu_emoji[i] == reaction.Emote.Name)
                     {
+                        Console.WriteLine("Emoji Found");
                         var result = from a in guild.Roles
                                      where a.Name == games[i]
                                      select a;
                         SocketRole role = result.FirstOrDefault();
-                        await guser.AddRoleAsync(role);
+                        Console.WriteLine("Role: "+role.Name);
+                        await guser.RemoveRoleAsync(role);
                     }
                 }
             }
@@ -116,9 +120,9 @@ namespace DiscordTutorialBot.Modules
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
             SocketUser user = GlobalUtils.client.GetUser(reaction.UserId);
-            if (channel.Id != gameChannel.Id || user.IsBot) return;// Task.CompletedTask;
+            if (user.IsBot) return;// Task.CompletedTask;
             // add vote
-            if (pendingGames.ContainsKey(reaction.MessageId))
+            if (pendingGames.ContainsKey(reaction.MessageId) && reaction.Emote.Name == "\u2705")
             {
                 pendingGames[reaction.MessageId].votes++;
                 if(pendingGames[reaction.MessageId].votes >= voteThreshold)
@@ -163,14 +167,17 @@ namespace DiscordTutorialBot.Modules
                 // they reacted to the correct role message
                 SocketGuild guild = GlobalUtils.client.Guilds.FirstOrDefault();
                 SocketGuildUser guser = guild.GetUser(user.Id);
+                Console.WriteLine("Remove Game Role: " + guser.Nickname);
                 for (int i = 0; i < games.Count && i < 9; i++)
                 {
                     if (GlobalUtils.menu_emoji[i] == reaction.Emote.Name)
                     {
+                        Console.WriteLine("Emoji Found");
                         var result = from a in guild.Roles
                                      where a.Name == games[i]
                                      select a;
                         SocketRole role = result.FirstOrDefault();
+                        Console.WriteLine("Role: " + role.Name);
                         await guser.AddRoleAsync(role);
                     }
                 }
