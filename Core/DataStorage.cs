@@ -115,13 +115,13 @@ namespace DiscordTutorialBot.Core
         }
         //
         // games
-        public static List<string> LoadGames()
+        public static List<GameInfo> LoadGames()
         {
-            if (!File.Exists(GamesPath)) return new List<string>();
+            if (!File.Exists(GamesPath)) return new List<GameInfo>();
             string json = File.ReadAllText(GamesPath);
-            return JsonConvert.DeserializeObject<List<string>>(json);
+            return JsonConvert.DeserializeObject<List<GameInfo>>(json);
         }
-        public static void SaveGames(List<string> games)
+        public static void SaveGames(List<GameInfo> games)
         {
             string json = JsonConvert.SerializeObject(games, Formatting.Indented);
             File.WriteAllText(GamesPath, json);

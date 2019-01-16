@@ -54,9 +54,9 @@ namespace DiscordTutorialBot.Modules
                 // they reacted to the correct role message
                 SocketGuild guild = GlobalUtils.client.Guilds.FirstOrDefault();
                 guser = guild.GetUser(user.Id);
-                for(int i = 0; i < roles.Count && i < 9; i++)
+                for(int i = 0; i < roles.Count && i < GlobalUtils.menu_emoji.Count<string>(); i++)
                 {
-                    if(menu_emoji[i] == reaction.Emote.Name)
+                    if(GlobalUtils.menu_emoji[i] == reaction.Emote.Name)
                     {
                         var result = from a in guild.Roles
                                      where a.Name == roles[i]

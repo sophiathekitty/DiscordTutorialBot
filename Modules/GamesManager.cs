@@ -14,7 +14,7 @@ namespace DiscordTutorialBot.Modules
 {
     public class GamesManager : ModuleBase<SocketCommandContext>
     {
-        private static List<string> games;
+        private static List<GameInfo> games;
         private static Dictionary<ulong, PendingGame> pendingGames;
         private static int voteThreshold = 3;
         private static SocketGuildChannel gameChannel;
@@ -99,13 +99,13 @@ namespace DiscordTutorialBot.Modules
                 SocketUser user = GlobalUtils.client.GetUser(reaction.UserId);
                 SocketGuildUser guser = guild.GetUser(user.Id);
                 Console.WriteLine("Remove Game Role: "+guser.Nickname);
-                for (int i = 0; i < games.Count && i < 9; i++)
+                for (int i = 0; i < games.Count && i < GlobalUtils.menu_emoji.Count<string>(); i++)
                 {
                     if (GlobalUtils.menu_emoji[i] == reaction.Emote.Name)
                     {
                         Console.WriteLine("Emoji Found");
                         var result = from a in guild.Roles
-                                     where a.Name == games[i]
+                                     where a.Name == games[i].game
                                      select a;
                         SocketRole role = result.FirstOrDefault();
                         Console.WriteLine("Role: "+role.Name);
@@ -119,12 +119,15 @@ namespace DiscordTutorialBot.Modules
 
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
-            SocketUser user = GlobalUtils.client.GetUser(reaction.UserId);
-            SocketGuildUser guser = user as SocketGuildUser;
             IGuildChannel guildChannel = channel as IGuildChannel;
             SocketGuild guild = guildChannel.Guild as SocketGuild; //GlobalUtils.client.Guilds.FirstOrDefault();
+            SocketUser user = GlobalUtils.client.GetUser(reaction.UserId);
+            SocketGuildUser guser = guild.GetUser(user.Id);
+
+
             if (user.IsBot) return;// Task.CompletedTask;
             // add vote
+            Console.WriteLine($"Emoji added: {reaction.Emote.Name}");
             if (pendingGames.ContainsKey(reaction.MessageId) && reaction.Emote.Name == "\u2705")
             {
                 pendingGames[reaction.MessageId].votes++;
@@ -149,7 +152,7 @@ namespace DiscordTutorialBot.Modules
                     });
                     Console.WriteLine("Voice Channel: " + voiceChan.Name);
                     await voiceChan.AddPermissionOverwriteAsync(gRole, permissions);
-                    games.Add(pendingGames[reaction.MessageId].game);
+                    games.Add(new GameInfo(pendingGames[reaction.MessageId].game,txtChan.Id,voiceChan.Id));
 
                     // remove poll message, add new game announcement and remove pending game
                     ISocketMessageChannel chan = gameChannel as ISocketMessageChannel;
@@ -164,17 +167,19 @@ namespace DiscordTutorialBot.Modules
                     UpdateOrAddRoleMessage();
                 }
             }
-            else if (reaction.MessageId == roleMessageId)
+            Console.WriteLine($"Emoji added: {reaction.MessageId} == {roleMessageId} : {reaction.MessageId == roleMessageId}");
+            Console.WriteLine("Add Game Role: " + guser.Nickname);
+            if (reaction.MessageId == roleMessageId)
             {
                 // they reacted to the correct role message
-                Console.WriteLine("Remove Game Role: " + guser.Nickname);
-                for (int i = 0; i < games.Count && i < 9; i++)
+                Console.WriteLine("Add Game Role: " + guser.Nickname);
+                for (int i = 0; i < games.Count && i < GlobalUtils.menu_emoji.Count<string>(); i++)
                 {
                     if (GlobalUtils.menu_emoji[i] == reaction.Emote.Name)
                     {
                         Console.WriteLine("Emoji Found");
                         var result = from a in guild.Roles
-                                     where a.Name == games[i]
+                                     where a.Name == games[i].game
                                      select a;
                         SocketRole role = result.FirstOrDefault();
                         Console.WriteLine("Role: " + role.Name);
@@ -182,7 +187,7 @@ namespace DiscordTutorialBot.Modules
                     }
                 }
             }
-
+            Console.WriteLine("what?!");
             Save();
         }
 
@@ -190,8 +195,12 @@ namespace DiscordTutorialBot.Modules
         [Command("addGame")]
         public async Task AddGame([Remainder]string arg = "")
         {
+            var result = from a in games
+                         where a.game == arg
+                         select a;
+            GameInfo game = result.FirstOrDefault();
             // see if the game already exists
-            if (games.Contains(arg))
+            if (game != null)
             {
                 await Context.Channel.SendMessageAsync($"`{arg}` already exists");
                 return;
@@ -277,11 +286,11 @@ namespace DiscordTutorialBot.Modules
 
             string roles_txt = "";
             List<IEmote> emotes = new List<IEmote>();
-            for (int i = 0; i < games.Count && i < 9; i++)
+            for (int i = 0; i < games.Count && i < GlobalUtils.menu_emoji.Count<string>(); i++)
             {
                 Emoji emoji = new Emoji(GlobalUtils.menu_emoji[i]);
                 emotes.Add(emoji);
-                roles_txt += $"{GlobalUtils.menu_emoji[i]} {games[i]}\n";
+                roles_txt += $"{GlobalUtils.menu_emoji[i]} {games[i].game}\n";
             }
 
             embed.WithDescription(roles_txt);
@@ -328,6 +337,16 @@ namespace DiscordTutorialBot.Modules
             }
             public int votes;
             public string game;
+        }
+        public class GameInfo
+        {
+            public string game;
+            public ulong text;
+            public ulong voice;
+            public GameInfo(string g, ulong t,ulong v)
+            {
+                game = g; text = t; voice = v;
+            }
         }
     }
 }
