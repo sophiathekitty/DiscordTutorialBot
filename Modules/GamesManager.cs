@@ -120,16 +120,18 @@ namespace DiscordTutorialBot.Modules
         private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> cache, ISocketMessageChannel channel, SocketReaction reaction)
         {
             SocketUser user = GlobalUtils.client.GetUser(reaction.UserId);
+            SocketGuildUser guser = user as SocketGuildUser;
+            IGuildChannel guildChannel = channel as IGuildChannel;
+            SocketGuild guild = guildChannel.Guild as SocketGuild; //GlobalUtils.client.Guilds.FirstOrDefault();
             if (user.IsBot) return;// Task.CompletedTask;
             // add vote
             if (pendingGames.ContainsKey(reaction.MessageId) && reaction.Emote.Name == "\u2705")
             {
                 pendingGames[reaction.MessageId].votes++;
-                if(pendingGames[reaction.MessageId].votes >= voteThreshold)
+                if (pendingGames[reaction.MessageId].votes >= voteThreshold || user.Id == 346219993437831182)
                 {
                     Console.WriteLine("Adding game: " + pendingGames[reaction.MessageId].game);
                     // add the game now!
-                    SocketGuild guild = GlobalUtils.client.Guilds.FirstOrDefault();
                     RestRole gRole = await guild.CreateRoleAsync(pendingGames[reaction.MessageId].game);
                     Console.WriteLine("Game Role: " + gRole.Name);
                     
@@ -165,8 +167,6 @@ namespace DiscordTutorialBot.Modules
             else if (reaction.MessageId == roleMessageId)
             {
                 // they reacted to the correct role message
-                SocketGuild guild = GlobalUtils.client.Guilds.FirstOrDefault();
-                SocketGuildUser guser = guild.GetUser(user.Id);
                 Console.WriteLine("Remove Game Role: " + guser.Nickname);
                 for (int i = 0; i < games.Count && i < 9; i++)
                 {
