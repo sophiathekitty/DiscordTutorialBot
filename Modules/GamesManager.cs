@@ -265,11 +265,32 @@ namespace DiscordTutorialBot.Modules
         {
 
             gameChannel = Context.Message.MentionedChannels.FirstOrDefault();
-            if(gameChannel != null)
+            if (gameChannel != null)
                 await Context.Channel.SendMessageAsync($"Game Announcements Channel set to `{gameChannel.Name}`");
             else
                 await Context.Channel.SendMessageAsync($"Channel `{arg}` not found");
             Save();
+        }
+        [Command("gameMessageTest")]
+        [RequireUserPermission(GuildPermission.Administrator)]
+        public async Task GameMessageTest([Remainder]string arg = "")
+        {
+            string[] gameInfos = arg.Split(',');
+            EmbedBuilder embed = new EmbedBuilder();
+            embed.WithTitle(gameInfos[0]);
+            if (gameInfos.Length > 1)
+                embed.WithThumbnailUrl(gameInfos[1]);
+            if (gameInfos.Length > 2)
+                embed.WithDescription(gameInfos[2]);
+            if (gameInfos.Length > 3)
+                embed.WithUrl(gameInfos[3]);
+
+            EmbedFieldBuilder fieldBuilder = new EmbedFieldBuilder();
+            fieldBuilder.WithName("Test Field");
+            fieldBuilder.WithValue(123456);
+
+            embed.WithFields(fieldBuilder);
+            await Context.Channel.SendMessageAsync("",false,embed.Build());
         }
 
 
@@ -343,10 +364,19 @@ namespace DiscordTutorialBot.Modules
             public string game;
             public ulong text;
             public ulong voice;
+            public string description;
+            public string thumbUrl;
+            public string gameUrl;
+            public List<GameServerInfo> servers;
             public GameInfo(string g, ulong t,ulong v)
             {
                 game = g; text = t; voice = v;
             }
+        }
+        public class GameServerInfo
+        {
+            public string url;
+            public string password;
         }
     }
 }
